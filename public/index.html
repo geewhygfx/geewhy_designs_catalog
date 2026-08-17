@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Geewhy Designs — Catalog</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Karla:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #F1E9DA; --bg-deep: #2B211A; --clay: #A8563B; --moss: #6E7358;
+    --brass: #B4915B; --ink: #2B211A; --ink-soft: #6b5f52; --card: #E7DCC6; --line: rgba(43,33,26,0.14);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{ background:var(--bg); color:var(--ink); font-family:'Karla', sans-serif; -webkit-font-smoothing:antialiased; }
+  .label{ font-family:'Space Mono', monospace; font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:var(--ink-soft); }
+  h1,h2,h3{ font-family:'Fraunces', serif; font-weight:500; line-height:1.05; letter-spacing:-0.01em;}
+  em{font-style:italic; font-weight:400;}
+  nav{ position:sticky; top:0; z-index:50; display:flex; align-items:center; justify-content:space-between; padding:22px 6vw; background:rgba(241,233,218,0.88); backdrop-filter: blur(10px); border-bottom:1px solid var(--line); }
+  .brand{ font-family:'Fraunces', serif; font-weight:500; font-size:20px; letter-spacing:.02em; }
+  .brand span{ color:var(--clay); }
+  .nav-links{ display:flex; gap:32px; align-items:center; }
+  .nav-links a{ color:var(--ink); text-decoration:none; font-size:14px; }
+  .btn{ display:inline-flex; align-items:center; gap:8px; background:var(--ink); color:var(--bg); padding:11px 20px; border-radius:100px; font-size:13px; font-weight:600; text-decoration:none; transition:transform .25s ease, background .25s ease; border:none; cursor:pointer; }
+  .btn:hover{ background:var(--clay); transform:translateY(-1px); }
+  .btn-outline{ background:transparent; border:1px solid var(--ink); color:var(--ink); }
+  .btn-outline:hover{ background:var(--ink); color:var(--bg); }
+  .hero{ position:relative; display:grid; grid-template-columns: 1.1fr .9fr; align-items:center; gap:40px; padding:90px 6vw 70px; overflow:hidden; }
+  .hero-copy .label{ margin-bottom:22px; display:block; }
+  .hero h1{ font-size:clamp(40px, 5.4vw, 78px); max-width:11ch; }
+  .hero p{ margin-top:22px; max-width:38ch; color:var(--ink-soft); font-size:16px; line-height:1.6; }
+  .hero-actions{ margin-top:36px; display:flex; gap:14px; }
+  .swatch-field{ position:relative; aspect-ratio: 4/5; border-radius:6px; overflow:hidden;
+    background: radial-gradient(120% 90% at 20% 15%, #C8A97E 0%, transparent 55%), radial-gradient(100% 80% at 80% 85%, var(--moss) 0%, transparent 60%), linear-gradient(150deg, var(--clay) 0%, #8B4A34 40%, var(--bg-deep) 100%); }
+  .swatch-field::before{ content:""; position:absolute; inset:0; background-image: repeating-linear-gradient(115deg, rgba(255,255,255,0.05) 0px, rgba(255,255,255,0.05) 1px, transparent 1px, transparent 9px); mix-blend-mode:overlay; }
+  .tag{ position:absolute; left:20px; top:20px; background:var(--bg); color:var(--ink); padding:10px 14px; border-radius:3px; font-family:'Space Mono', monospace; font-size:11px; letter-spacing:.08em; box-shadow:0 10px 24px rgba(0,0,0,.18); transform:rotate(-3deg); }
+  .tag b{ display:block; font-size:13px; letter-spacing:0; margin-bottom:2px; font-family:'Fraunces', serif; font-weight:600;}
+  .strip{ border-top:1px solid var(--line); border-bottom:1px solid var(--line); background:var(--bg-deep); color:var(--bg); padding:14px 0; overflow:hidden; white-space:nowrap; }
+  .strip-track{ display:inline-block; animation: scroll 26s linear infinite; font-family:'Space Mono', monospace; font-size:12px; letter-spacing:.14em;}
+  .strip-track span{ margin:0 26px; color:var(--brass); }
+  @keyframes scroll{ from{ transform:translateX(0);} to{ transform:translateX(-50%);} }
+  .section{ padding:90px 6vw; }
+  .section-head{ display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:48px; gap:24px; flex-wrap:wrap; }
+  .section-head h2{ font-size:clamp(30px,3.4vw,44px); }
+  .section-head p{ color:var(--ink-soft); max-width:34ch; font-size:14.5px; }
+  .grid{ display:grid; grid-template-columns:repeat(3, 1fr); gap:28px; }
+  .card{ background:var(--card); border-radius:6px; overflow:hidden; border:1px solid var(--line); display:flex; flex-direction:column; transition:transform .3s ease, box-shadow .3s ease; }
+  .card:hover{ transform:translateY(-6px); box-shadow:0 20px 34px rgba(43,33,26,.14); }
+  .card-media{ aspect-ratio:4/5; position:relative; background-size:cover; background-position:center; }
+  .card-media .status{ position:absolute; top:12px; right:12px; background:var(--bg); font-family:'Space Mono',monospace; font-size:10px; letter-spacing:.08em; padding:5px 9px; border-radius:3px; }
+  .arrow{ position:absolute; top:50%; transform:translateY(-50%); background:rgba(241,233,218,0.85); border:none; width:28px; height:28px; border-radius:50%; font-size:16px; cursor:pointer; opacity:0; transition:opacity .2s ease; color:var(--ink); line-height:1; }
+  .card-media:hover .arrow{ opacity:1; }
+  .arrow.prev{ left:10px; }
+  .arrow.next{ right:10px; }
+  .dots{ position:absolute; bottom:10px; left:0; right:0; display:flex; justify-content:center; gap:5px; }
+  .dot{ width:6px; height:6px; border-radius:50%; background:rgba(241,233,218,0.6); cursor:pointer; }
+  .dot.active{ background:var(--bg); width:16px; border-radius:4px; transition:width .2s ease; }
+  .card-body{ padding:18px 20px 22px; display:flex; flex-direction:column; gap:6px; flex:1; }
+  .card-body .cat{ color:var(--ink-soft); font-size:12px; }
+  .card-body h3{ font-size:19px; font-weight:500; }
+  .card-foot{ margin-top:auto; padding-top:14px; display:flex; align-items:center; justify-content:space-between; border-top:1px solid var(--line); }
+  .price{ font-family:'Space Mono', monospace; font-size:14px; }
+  .inquire{ font-size:12.5px; font-weight:600; color:var(--clay); text-decoration:none; display:flex; align-items:center; gap:6px; }
+  .inquire:hover{ text-decoration:underline; }
+  .m1{ background:linear-gradient(160deg,#C9A96E,#8B5E3C 60%,#3E2E22); }
+  .m2{ background:linear-gradient(160deg,#8C7A56,#5F6B4A 55%,#2B211A); }
+  .m3{ background:linear-gradient(160deg,#B4915B,#A8563B 55%,#3E2622); }
+  .m4{ background:linear-gradient(160deg,#D8C4A0,#6E7358 60%,#2B211A); }
+  .m5{ background:linear-gradient(160deg,#9C6B47,#3E2622 65%); }
+  .m6{ background:linear-gradient(160deg,#C8A97E,#A8563B 55%,#2B211A); }
+  .cta-band{ margin:0 6vw 90px; padding:70px 6vw; border-radius:10px; background:var(--bg-deep); color:var(--bg); display:flex; align-items:center; justify-content:space-between; gap:30px; flex-wrap:wrap; }
+  .cta-band h2{ color:var(--bg); font-size:clamp(26px,3vw,38px); max-width:16ch; }
+  .cta-band p{ color:#cabfae; margin-top:10px; max-width:40ch; font-size:14.5px; }
+  footer{ padding:50px 6vw 40px; border-top:1px solid var(--line); display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:20px; }
+  footer .label{ margin-bottom:8px; }
+  footer .cols{ display:flex; gap:60px; flex-wrap:wrap; }
+  footer a{ color:var(--ink-soft); text-decoration:none; font-size:13.5px; display:block; margin-top:8px; }
+  footer a:hover{ color:var(--clay); }
+  .empty{ padding:60px 0; text-align:center; color:var(--ink-soft); }
+  @media(max-width:880px){ .hero{ grid-template-columns:1fr; } .grid{ grid-template-columns:repeat(2,1fr); } .nav-links a:not(.btn){ display:none; } }
+  @media(max-width:560px){ .grid{ grid-template-columns:1fr; } .cta-band{ flex-direction:column; align-items:flex-start; } }
+  @media (prefers-reduced-motion: reduce){ .strip-track{ animation:none; } .card{ transition:none; } }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="brand">GEEWHY <span>DESIGNS</span></div>
+  <div class="nav-links">
+    <a href="#collection">Collection</a>
+    <a href="#about">About</a>
+    <button class="btn" id="navInquire">Chat on WhatsApp</button>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-copy">
+    <span class="label">Made to Order</span>
+    <h1>Quiet luxury, <em>cut</em> for everyday wear.</h1>
+    <p>Browse the full Geewhy Designs collection — every fabric, fit, and colourway, without the back-and-forth. Find what fits, then send us one message.</p>
+    <div class="hero-actions">
+      <a class="btn" href="#collection">View Collection</a>
+      <button class="btn btn-outline" id="heroInquire">Inquire on WhatsApp</button>
+    </div>
+  </div>
+  <div class="swatch-field">
+    <div class="tag"><b>Geewhy</b>Designs</div>
+  </div>
+</section>
+
+<div class="strip">
+  <div class="strip-track">
+    <span>◆</span>NEW ARRIVALS<span>◆</span>AGBADA<span>◆</span>KAFTANS<span>◆</span>TAILORED SETS<span>◆</span>ACCESSORIES<span>◆</span>MADE TO ORDER
+    <span>◆</span>NEW ARRIVALS<span>◆</span>AGBADA<span>◆</span>KAFTANS<span>◆</span>TAILORED SETS<span>◆</span>ACCESSORIES<span>◆</span>MADE TO ORDER
+  </div>
+</div>
+
+<section class="section" id="collection">
+  <div class="section-head">
+    <div>
+      <span class="label">The Collection</span>
+      <h2 style="margin-top:10px;">Currently Available</h2>
+    </div>
+    <p>Every piece below is in stock or made to order. Tap "Inquire" and we'll pick up the sizing and delivery from there.</p>
+  </div>
+  <div class="grid" id="productGrid">
+    <p class="empty">Loading collection…</p>
+  </div>
+</section>
+
+<div class="cta-band">
+  <div>
+    <h2>See something you like?</h2>
+    <p>One tap sends us your name, the piece, and your size — no more scrolling through the whole gallery on WhatsApp.</p>
+  </div>
+  <button class="btn" style="background:var(--brass); color:var(--bg-deep);" id="bandInquire">Message Geewhy Designs</button>
+</div>
+
+<footer id="about">
+  <div>
+    <span class="label">Geewhy Designs</span>
+    <p style="max-width:36ch; margin-top:8px; color:var(--ink-soft); font-size:13.5px;">Contemporary Nigerian tailoring, made to order in earth-toned fabrics.</p>
+  </div>
+  <div class="cols">
+    <div>
+      <span class="label">Shop</span>
+      <a href="#collection">Collection</a>
+    </div>
+    <div>
+      <span class="label">Contact</span>
+      <a href="#" id="footerInquire">WhatsApp</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+  const swatchClasses = ['m1','m2','m3','m4','m5','m6'];
+  const statusLabels = {
+    in_stock: 'IN STOCK',
+    made_to_order: 'MADE TO ORDER',
+    low_stock: 'LOW STOCK',
+    sold_out: 'SOLD OUT'
+  };
+  let whatsappNumber = '';
+
+  function money(n){
+    return '₦' + Number(n).toLocaleString('en-NG', { minimumFractionDigits: 0 });
+  }
+
+  function openWhatsapp(productName){
+    const text = productName
+      ? `Hi Geewhy Designs, I'm interested in the ${productName}. Is it available?`
+      : `Hi Geewhy Designs, I'd like to ask about your collection.`;
+    window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(text)}`, '_blank');
+  }
+
+  async function loadConfig(){
+    const res = await fetch('/api/config');
+    const data = await res.json();
+    whatsappNumber = data.whatsapp || '';
+  }
+
+  async function loadProducts(){
+    const grid = document.getElementById('productGrid');
+    try {
+      const res = await fetch('/api/products');
+      const products = await res.json();
+      if (!products.length){
+        grid.innerHTML = '<p class="empty">No products yet — add your first one from the admin page.</p>';
+        return;
+      }
+      grid.innerHTML = products.map((p, i) => {
+        const imgs = (p.images && p.images.length) ? p.images : [];
+        const mediaClass = imgs.length ? '' : swatchClasses[i % swatchClasses.length];
+        const mediaStyle = imgs.length ? `style="background-image:url('${imgs[0]}')"` : '';
+        const dots = imgs.length > 1
+          ? `<div class="dots">${imgs.map((_, idx) => `<span class="dot${idx===0?' active':''}" data-idx="${idx}"></span>`).join('')}</div>`
+          : '';
+        const arrows = imgs.length > 1
+          ? `<button class="arrow prev" aria-label="Previous photo">‹</button><button class="arrow next" aria-label="Next photo">›</button>`
+          : '';
+        return `
+          <article class="card">
+            <div class="card-media ${mediaClass}" ${mediaStyle} data-images='${JSON.stringify(imgs)}' data-current="0">
+              <span class="status">${statusLabels[p.stock_status] || 'IN STOCK'}</span>
+              ${arrows}
+              ${dots}
+            </div>
+            <div class="card-body">
+              <span class="cat">${p.category}${p.sizes ? ' · ' + p.sizes : ''}</span>
+              <h3>${p.name}</h3>
+              <div class="card-foot">
+                <span class="price">${money(p.price)}</span>
+                <a class="inquire" href="#" onclick="openWhatsapp('${p.name.replace(/'/g, "\\'")}'); return false;">Inquire →</a>
+              </div>
+            </div>
+          </article>`;
+      }).join('');
+      attachCarouselHandlers();
+    } catch (err) {
+      grid.innerHTML = '<p class="empty">Could not load the collection right now.</p>';
+    }
+  }
+
+  function attachCarouselHandlers(){
+    document.querySelectorAll('.card-media').forEach(media => {
+      const imgs = JSON.parse(media.dataset.images || '[]');
+      if (imgs.length < 2) return;
+
+      function show(idx){
+        media.dataset.current = idx;
+        media.style.backgroundImage = `url('${imgs[idx]}')`;
+        media.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('active', i === idx));
+      }
+
+      media.querySelector('.prev').onclick = (e) => {
+        e.preventDefault(); e.stopPropagation();
+        let idx = (parseInt(media.dataset.current) - 1 + imgs.length) % imgs.length;
+        show(idx);
+      };
+      media.querySelector('.next').onclick = (e) => {
+        e.preventDefault(); e.stopPropagation();
+        let idx = (parseInt(media.dataset.current) + 1) % imgs.length;
+        show(idx);
+      };
+      media.querySelectorAll('.dot').forEach(dot => {
+        dot.onclick = (e) => {
+          e.preventDefault(); e.stopPropagation();
+          show(parseInt(dot.dataset.idx));
+        };
+      });
+    });
+  }
+
+  document.getElementById('navInquire').onclick = () => openWhatsapp();
+  document.getElementById('heroInquire').onclick = () => openWhatsapp();
+  document.getElementById('bandInquire').onclick = () => openWhatsapp();
+  document.getElementById('footerInquire').onclick = (e) => { e.preventDefault(); openWhatsapp(); };
+
+  loadConfig().then(loadProducts);
+</script>
+
+</body>
+</html>

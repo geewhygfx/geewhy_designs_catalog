@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Geewhy Designs — Admin</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600&family=Karla:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{ --bg:#F1E9DA; --bg-deep:#2B211A; --clay:#A8563B; --ink:#2B211A; --ink-soft:#6b5f52; --card:#E7DCC6; --line:rgba(43,33,26,.16); }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{ background:var(--bg); color:var(--ink); font-family:'Karla', sans-serif; padding:40px 5vw; }
+  h1{ font-family:'Fraunces', serif; font-size:28px; margin-bottom:4px; }
+  .sub{ color:var(--ink-soft); font-size:14px; margin-bottom:30px; }
+  .label{ font-family:'Space Mono', monospace; font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-soft); display:block; margin-bottom:6px; }
+  input, select, textarea{
+    width:100%; padding:11px 12px; border:1px solid var(--line); border-radius:5px;
+    background:#fff; font-family:'Karla',sans-serif; font-size:14px; margin-bottom:16px;
+  }
+  textarea{ resize:vertical; min-height:70px; }
+  .btn{ background:var(--ink); color:var(--bg); border:none; padding:12px 22px; border-radius:100px; font-weight:600; font-size:13.5px; cursor:pointer; }
+  .btn:hover{ background:var(--clay); }
+  .btn-danger{ background:transparent; color:#a83b3b; border:1px solid #a83b3b; padding:6px 12px; border-radius:100px; font-size:12px; cursor:pointer; }
+  #loginScreen{ max-width:340px; margin:80px auto; text-align:center; }
+  #dashboard{ display:none; max-width:1000px; margin:0 auto; }
+  .layout{ display:grid; grid-template-columns:340px 1fr; gap:36px; align-items:start; }
+  .panel{ background:var(--card); border:1px solid var(--line); border-radius:8px; padding:24px; }
+  table{ width:100%; border-collapse:collapse; }
+  th, td{ text-align:left; padding:10px 8px; border-bottom:1px solid var(--line); font-size:13.5px; }
+  th{ font-family:'Space Mono', monospace; font-size:10.5px; letter-spacing:.06em; text-transform:uppercase; color:var(--ink-soft); }
+  .msg{ font-size:13px; margin-top:-8px; margin-bottom:14px; }
+  .msg.ok{ color:#3d6b3d; }
+  .msg.err{ color:#a83b3b; }
+  @media(max-width:800px){ .layout{ grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+
+<div id="loginScreen">
+  <h1>Admin</h1>
+  <p class="sub">Geewhy Designs catalog manager</p>
+  <input type="password" id="passwordInput" placeholder="Admin password" />
+  <button class="btn" id="loginBtn" style="width:100%;">Log in</button>
+  <p class="msg err" id="loginError"></p>
+</div>
+
+<div id="dashboard">
+  <h1>Geewhy Designs — Products</h1>
+  <p class="sub">Add, edit, or remove what shows on the catalog site.</p>
+
+  <div class="layout">
+    <div class="panel">
+      <span class="label">Add a product</span>
+      <form id="productForm">
+        <input type="hidden" id="editId" />
+        <label class="label">Name</label>
+        <input type="text" id="name" required placeholder="e.g. Amber Agbada" />
+
+        <label class="label">Category</label>
+        <input type="text" id="category" required placeholder="e.g. Agbada" />
+
+        <label class="label">Price (₦)</label>
+        <input type="number" id="price" required placeholder="85000" />
+
+        <label class="label">Sizes</label>
+        <input type="text" id="sizes" placeholder="S, M, L" />
+
+        <label class="label">Stock status</label>
+        <select id="stock_status">
+          <option value="in_stock">In stock</option>
+          <option value="made_to_order">Made to order</option>
+          <option value="low_stock">Low stock</option>
+          <option value="sold_out">Sold out</option>
+        </select>
+
+        <label class="label">Description</label>
+        <textarea id="description" placeholder="Fabric, fit, details customers ask about"></textarea>
+
+        <label class="label">Photos (up to 6 — first one is the cover photo)</label>
+        <input type="file" id="image" accept="image/*" multiple />
+        <div id="existingPhotos" style="display:flex; gap:8px; flex-wrap:wrap; margin:-8px 0 16px;"></div>
+
+        <button type="submit" class="btn" style="width:100%;" id="submitBtn">Add product</button>
+        <button type="button" id="cancelEditBtn" onclick="cancelEdit()" style="display:none; width:100%; margin-top:8px; background:transparent; border:1px solid var(--line); color:var(--ink-soft); padding:10px; border-radius:100px; font-size:13px; cursor:pointer;">Cancel edit</button>
+        <p class="msg" id="formMsg"></p>
+      </form>
+    </div>
+
+    <div class="panel">
+      <span class="label">Current products</span>
+      <table>
+        <thead><tr><th>Name</th><th>Category</th><th>Price</th><th>Status</th><th></th></tr></thead>
+        <tbody id="productRows"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+  let adminPassword = '';
+
+  document.getElementById('loginBtn').onclick = async () => {
+    const password = document.getElementById('passwordInput').value;
+    const res = await fetch('/api/admin/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password })
+    });
+    if (res.ok) {
+      adminPassword = password;
+      document.getElementById('loginScreen').style.display = 'none';
+      document.getElementById('dashboard').style.display = 'block';
+      loadProducts();
+    } else {
+      document.getElementById('loginError').textContent = 'Wrong password.';
+    }
+  };
+
+  let currentProducts = [];
+
+  async function loadProducts(){
+    const res = await fetch('/api/products');
+    const products = await res.json();
+    currentProducts = products;
+    const rows = document.getElementById('productRows');
+    rows.innerHTML = products.map(p => `
+      <tr>
+        <td>${p.name}</td>
+        <td>${p.category}</td>
+        <td>₦${Number(p.price).toLocaleString()}</td>
+        <td>${p.stock_status}</td>
+        <td style="display:flex; gap:8px;">
+          <button class="btn-danger" style="color:var(--ink); border-color:var(--ink);" onclick="editProduct(${p.id})">Edit</button>
+          <button class="btn-danger" onclick="deleteProduct(${p.id})">Delete</button>
+        </td>
+      </tr>`).join('');
+  }
+
+  async function editProduct(id){
+    const p = currentProducts.find(x => x.id === id);
+    if (!p) return;
+    document.getElementById('editId').value = p.id;
+    document.getElementById('name').value = p.name;
+    document.getElementById('category').value = p.category;
+    document.getElementById('price').value = p.price;
+    document.getElementById('sizes').value = p.sizes || '';
+    document.getElementById('stock_status').value = p.stock_status;
+    document.getElementById('description').value = p.description || '';
+    document.getElementById('submitBtn').textContent = 'Save changes';
+    document.getElementById('cancelEditBtn').style.display = 'inline-block';
+    document.getElementById('formMsg').textContent = '';
+    await loadExistingPhotos(id);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  async function loadExistingPhotos(productId){
+    const wrap = document.getElementById('existingPhotos');
+    const res = await fetch('/api/admin/products/' + productId + '/images', {
+      headers: { 'x-admin-password': adminPassword }
+    });
+    const photos = await res.json();
+    wrap.innerHTML = photos.map(ph => `
+      <div style="position:relative;">
+        <img src="${ph.image_path}" style="width:60px; height:60px; object-fit:cover; border-radius:4px; border:1px solid var(--line);" />
+        <button onclick="deletePhoto(${ph.id}, ${productId})" style="position:absolute; top:-6px; right:-6px; width:18px; height:18px; border-radius:50%; background:#a83b3b; color:#fff; border:none; font-size:11px; cursor:pointer; line-height:1;">×</button>
+      </div>`).join('');
+  }
+
+  async function deletePhoto(imageId, productId){
+    await fetch('/api/admin/product-images/' + imageId, {
+      method: 'DELETE',
+      headers: { 'x-admin-password': adminPassword }
+    });
+    loadExistingPhotos(productId);
+    loadProducts();
+  }
+
+  function cancelEdit(){
+    document.getElementById('productForm').reset();
+    document.getElementById('editId').value = '';
+    document.getElementById('submitBtn').textContent = 'Add product';
+    document.getElementById('cancelEditBtn').style.display = 'none';
+    document.getElementById('existingPhotos').innerHTML = '';
+  }
+
+  async function deleteProduct(id){
+    if (!confirm('Remove this product from the catalog?')) return;
+    await fetch('/api/admin/products/' + id, {
+      method: 'DELETE',
+      headers: { 'x-admin-password': adminPassword }
+    });
+    loadProducts();
+  }
+
+  document.getElementById('productForm').onsubmit = async (e) => {
+    e.preventDefault();
+    const formMsg = document.getElementById('formMsg');
+    const fd = new FormData();
+    fd.append('name', document.getElementById('name').value);
+    fd.append('category', document.getElementById('category').value);
+    fd.append('price', document.getElementById('price').value);
+    fd.append('sizes', document.getElementById('sizes').value);
+    fd.append('stock_status', document.getElementById('stock_status').value);
+    fd.append('description', document.getElementById('description').value);
+    const imageFiles = document.getElementById('image').files;
+    for (const file of imageFiles) fd.append('images', file);
+
+    const editId = document.getElementById('editId').value;
+    const url = editId ? '/api/admin/products/' + editId : '/api/admin/products';
+    const method = editId ? 'PUT' : 'POST';
+
+    const res = await fetch(url, {
+      method,
+      headers: { 'x-admin-password': adminPassword },
+      body: fd
+    });
+
+    if (res.ok) {
+      formMsg.className = 'msg ok';
+      formMsg.textContent = editId ? 'Product updated.' : 'Product added.';
+      cancelEdit();
+      loadProducts();
+    } else {
+      formMsg.className = 'msg err';
+      formMsg.textContent = 'Something went wrong — try again.';
+    }
+  };
+</script>
+
+</body>
+</html>
